@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="sk">
+  <head>
+    <title>Faktúra č.{{id}}</title>
+    <meta charset="UTF-8" />
+    <style>
+      html,
+      body {
+        width: 21cm;
+        height: 29.7cm;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        outline: 1px solid black;
+      }
+
+      .right-in-two {
+        display: flex;
+      }
+
+      .right-in-two > div {
+        width: 50%;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        margin: 0;
+      }
+
+      table {
+        width: 100%;
+        border-spacing: 0;
+      }
+
+      .text-left {
+        text-align: left;
+      }
+
+      .text-right {
+        text-align: right;
+      }
+
+      thead {
+        background-color: #ddd;
+      }
+
+      th,
+      td {
+        padding: 5px 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <section>
+      <h1><b>Faktúra č.00000000</b></h1>
+    </section>
+    <section class="right-in-two">
+      <div>
+        <h2><b>Dodávateľ</b></h2>
+        <div>Name Name</div>
+        <div>Address</div>
+        <div>City</div>
+        <div>Country</div>
+        <div>IČO:</div>
+        <div>Neplatiteľ DPH</div>
+        <h3><b>Kontaktné údaje</b></h3>
+        <div>Email: email@email.com</div>
+      </div>
+      <div>
+        <div>Dátum vystavenia: 1.4.2000</div>
+        <div><b>Dátum splatnosti: 15.4.2000</b></div>
+        <h2><b>Odoberateľ</b></h2>
+        <div>Name Name</div>
+        <div>Address</div>
+        <div>City</div>
+        <div>Country</div>
+      </div>
+    </section>
+    <section>
+      <h2>Spôsob platby: Prevodom</h2>
+      <div>IBAN: SK00 0000 0000 0000 0000 0000</div>
+      <div>SWIFT: ABCDEFGH</div>
+      <div>Variabilný symbol: 00000000</div>
+      <div>Konštantný symbol: 0000</div>
+      <div>Na úhradu: 0€</div>
+    </section>
+    <section>
+      <table>
+        <thead>
+          <tr>
+            <th class="text-left">Počet</th>
+            <th class="text-left">Popis</th>
+            <th class="text-right">Jedn. cena</th>
+            <th class="text-right">Celkom</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-left">1,00 Ks</td>
+            <td class="text-left">Produkt</td>
+            <td class="text-right">0€</td>
+            <td class="text-right">0€</td>
+          </tr>
+          <tr>
+            <td class="text-left">1,00 Ks</td>
+            <td class="text-left">Produkt</td>
+            <td class="text-right">0€</td>
+            <td class="text-right">0€</td>
+          </tr>
+          <tr>
+            <td class="text-left">1,00 Ks</td>
+            <td class="text-left">Produkt</td>
+            <td class="text-right">0€</td>
+            <td class="text-right">0€</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3><b>Celkom k úhrade: </b>0€</h3>
+    </section>
+  </body>
+</html>
