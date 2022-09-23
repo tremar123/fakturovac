@@ -1,13 +1,17 @@
 import tkinter as tk
 from tkinter import ttk
+from jinja2 import Template
+
+
+def load_template():
+    with open("./assets/faktura.html", "r") as file:
+        template = Template(file.read())
+        return template
 
 
 def main():
     root = tk.Tk()
     root.title("Fakturovac")
-
-    ttk.Label(root, text="input").pack()
-    ttk.Entry(root).pack()
 
     root.mainloop()
 
