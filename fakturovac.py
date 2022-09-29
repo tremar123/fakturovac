@@ -1,9 +1,14 @@
 import tkinter as tk
 import json
+import datetime
+import tempfile
 from tkinter import END, MULTIPLE, Menu, Toplevel, ttk, messagebox
 from jinja2 import Template
 
 root = tk.Tk()
+
+current_date = datetime.datetime.now()
+current_year = current_date.date().strftime("%Y")
 
 
 def load_template():
@@ -105,7 +110,9 @@ def load_user_data():
         with open("./data.json", "r") as file:
             return json.load(file)
     except FileNotFoundError:
-        user_data_edit_window()
+        # NOTE: after this i need to read the file, can this be done with async?
+        # user_data_edit_window()
+        messagebox.showinfo("Vyplňte údaje", "Edit > Nastavenia")
 
 
 def add_product():
@@ -130,7 +137,6 @@ def clear_products():
 
 
 template = load_template()
-user_data = load_user_data()
 
 root.title("Fakturovac")
 
@@ -189,16 +195,21 @@ product_price_label.grid(row=2, column=2)
 product_price_entry = ttk.Entry(root)
 product_price_entry.grid(row=2, column=3)
 
+const_label = ttk.Label(root, text="Konštantý symbol")
+const_label.grid(row=6, column=0)
+const_entry = ttk.Entry(root)
+const_entry.grid(row=6, column=1, pady=20)
+
 products_list_label = ttk.Label(root, text="Produkty")
-products_list_label.grid(row=6, column=0)
+products_list_label.grid(row=7, column=0)
 
 products_list_scrollbar = ttk.Scrollbar(root)
-products_list_scrollbar.grid(row=7, column=4)
+products_list_scrollbar.grid(row=8, column=4, sticky="nesw", pady=(0, 20))
 
 products_list = tk.Listbox(root, selectmode=MULTIPLE)
 products_list.configure(yscrollcommand=products_list_scrollbar.set)
 products_list_scrollbar.configure(command=products_list.yview)
-products_list.grid(row=7, column=0, columnspan=4, sticky="ew")
+products_list.grid(row=8, column=0, columnspan=4, sticky="ew", pady=(0, 20))
 
 product_add_btn = ttk.Button(root, text="Pridať", command=add_product)
 product_add_btn.grid(row=3, column=3, rowspan=2)
@@ -209,6 +220,61 @@ product_remove_btn.grid(row=13, column=1)
 product_clear_btn = ttk.Button(
     root, text="Zmazať všetko", command=clear_products)
 product_clear_btn.grid(row=13, column=2)
+
+
+def render_template():
+    with open("./last_id.txt", "a+") as file:
+        file.seek(0)
+        last_id = file.read()
+        try:
+            last_id = int(last_id)
+        except ValueError:
+            last_id = 0
+        last_id += 1
+        last_id = format(last_id, '04')
+
+        products = []
+
+        overall_sum = 0
+
+        for product in products_list.get(0, END):
+            p = product.split(" - ")
+            price_sum = float(p[1][:-2]) * float(p[2][:-4])
+            overall_sum += price_sum
+
+            products.append({
+                "name": p[0],
+                "count": p[1],
+                "price": p[2],
+                "price_sum": "{:.2f}".format(price_sum),
+            })
+
+        with open("./render.html", "w") as tmp_file:
+            tmp_file.write(template.render(
+                id=f"{str(current_year)}{last_id}",
+                user_data=load_user_data(),
+                date_of_issue=current_date.date().strftime("%d. %m. %Y"),
+                due_date=datetime.datetime.strftime(
+                    current_date + datetime.timedelta(days=14), "%d. %m. %Y"),
+                client={
+                    "name": name_entry.get(),
+                    "address": address_entry.get(),
+                    "city": city_entry.get(),
+                    "country": country_entry.get(),
+                    "ico": ico_entry.get(),
+                    "dic": dic_entry.get(),
+                },
+                products=products,
+                sum="{:.2f}".format(overall_sum),
+                const_sym=const_entry.get()
+            ))
+        file.seek(0)
+        file.truncate()
+        file.write(last_id)
+
+
+render_btn = ttk.Button(root, text="Vytvoriť faktúru", command=render_template)
+render_btn.grid(row=14, column=0, columnspan=4, pady=20)
 
 if __name__ == "__main__":
     root.mainloop()

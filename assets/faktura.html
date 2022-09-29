@@ -96,40 +96,62 @@
   </head>
   <body>
     <section class="heading-sec">
-      <h1><b>Faktúra č.00000000</b></h1>
+      <h1><b>Faktúra č.{{ id }}</b></h1>
     </section>
     <section class="right-in-two">
       <div>
         <h2 class="people"><b>Dodávateľ</b></h2>
-        <div><b class="fs-medium">Name Name</b></div>
-        <div>Address</div>
-        <div>City</div>
-        <div>Country</div>
-        <div>IČO:</div>
+        {% if user_data.name %}
+        <div><b class="fs-medium">{{user_data.name}}</b></div>
+        {% endif %} {% if user_data.address %}
+        <div>{{user_data.address}}</div>
+        {% endif %} {% if user_data.city %}
+        <div>{{user_data.city}}</div>
+        {% endif %} {% if user_data.country %}
+        <div>{{user_data.country}}</div>
+        {% endif %} {% if user_data.ico %}
+        <div>{{user_data.ico}}</div>
+        {% endif %} {% if user_data.dic %}
+        <div>{{user_data.dic}}</div>
+        {% endif %}
         <div>Neplatiteľ DPH</div>
         <h3 class="heading-kontakt"><b>Kontaktné údaje</b></h3>
-        <div>Email: email@email.com</div>
+        {% if user_data.email %}
+        <div>{{user_data.email}}</div>
+        {% endif %}
       </div>
       <div>
-        <div>Dátum vystavenia: 1.4.2000</div>
-        <div><b>Dátum splatnosti: 15.12.2000</b></div>
+        <div>Dátum vystavenia: {{date_of_issue}}</div>
+        <div><b>Dátum splatnosti: {{due_date}}</b></div>
         <h2 class="people"><b>Odoberateľ</b></h2>
-        <div><b class="fs-medium">Name Name</b></div>
-        <div>Address</div>
-        <div>City</div>
-        <div>Country</div>
-        <div>IČO:</div>
-        <div>DIČ:</div>
+        {% if client.name %}
+        <div><b class="fs-medium">{{client.name}}</b></div>
+        {% endif %} {% if client.address %}
+        <div>{{client.address}}</div>
+        {% endif %} {% if client.city %}
+        <div>{{client.city}}</div>
+        {% endif %} {% if client.country %}
+        <div>{{client.country}}</div>
+        {% endif %} {% if client.ico %}
+        <div>IČO: {{client.ico}}</div>
+        {% endif %} {% if client.dic %}
+        <div>DIČ: {{client.dic}}</div>
+        {% endif %}
       </div>
     </section>
     <section class="payment">
       <div>
         <h2>Spôsob platby: Prevodom</h2>
-        <div>IBAN: SK00 0000 0000 0000 0000 0000</div>
-        <div>SWIFT: ABCDEFGH</div>
-        <div>Variabilný symbol: 00000000</div>
-        <div>Konštantný symbol: 0000</div>
-        <div>Na úhradu: 0€</div>
+        {% if user_data.iban %}
+        <div>IBAN: {{user_data.iban}}</div>
+        {% endif %} {% if user_data.swift %}
+        <div>SWIFT: {{user_data.swift}}</div>
+        {% endif %}
+        <div>Variabilný symbol: {{id}}</div>
+        {% if const_sym %}
+        <div>Konštantný symbol: {{const_sym}}</div>
+        {% endif %}
+        <div>Na úhradu: {{sum}}€</div>
       </div>
       <div>
         <img src="qr.png" height="200" />
@@ -146,28 +168,18 @@
           </tr>
         </thead>
         <tbody>
+          {% for product in products %}
           <tr>
-            <td class="text-left">1,00 Ks</td>
-            <td class="text-left">Produkt</td>
-            <td class="text-right">0€</td>
-            <td class="text-right">0€</td>
+            <td class="text-left">{{product.count}}</td>
+            <td class="text-left">{{product.name}}</td>
+            <td class="text-right">{{product.price}}</td>
+            <td class="text-right">{{product.price_sum}}€</td>
           </tr>
-          <tr>
-            <td class="text-left">1,00 Ks</td>
-            <td class="text-left">Produkt</td>
-            <td class="text-right">0€</td>
-            <td class="text-right">0€</td>
-          </tr>
-          <tr>
-            <td class="text-left">1,00 Ks</td>
-            <td class="text-left">Produkt</td>
-            <td class="text-right">0€</td>
-            <td class="text-right">0€</td>
-          </tr>
+          {% endfor %}
         </tbody>
       </table>
       <h3 class="text-right sum">
-        <b>Celkom k úhrade: </b><span class="price">0€</span>
+        <b>Celkom k úhrade: </b><span class="price">{{sum}}€</span>
       </h3>
     </section>
   </body>
