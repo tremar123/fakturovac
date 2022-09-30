@@ -17,7 +17,7 @@ current_year = current_date.date().strftime("%Y")
 
 
 def load_template():
-    with open("./assets/faktura.html", "r") as file:
+    with open(os.path.join(os.path.dirname(__file__), "faktura.html"), "r") as file:
         template = Template(file.read())
         return template
 
@@ -76,7 +76,7 @@ def user_data_edit_window():
     user_btn_cancel.grid(row=9, column=0)
 
     try:
-        with open("./data.json", "r") as file:
+        with open(os.path.join(os.path.dirname(__file__), "data.json"), "r") as file:
             data = json.load(file)
             user_name_entry.insert(0, data["name"])
             user_address_entry.insert(0, data["address"])
@@ -91,7 +91,7 @@ def user_data_edit_window():
         pass
 
     def save_user_data():
-        with open("./data.json", "w") as file:
+        with open(os.path.join(os.path.dirname(__file__), "data.json"), "w") as file:
             newData = {
                 "name": user_name_entry.get(),
                 "address": user_address_entry.get(),
@@ -112,7 +112,7 @@ def user_data_edit_window():
 
 def load_user_data():
     try:
-        with open("./data.json", "r") as file:
+        with open(os.path.join(os.path.dirname(__file__), "data.json"), "r") as file:
             return json.load(file)
     except FileNotFoundError:
         # NOTE: after this i need to read the file, can this be done with async?
@@ -228,7 +228,7 @@ product_clear_btn.grid(row=13, column=2)
 
 
 def render_template():
-    with open("./last_id.txt", "a+") as file:
+    with open(os.path.join(os.path.dirname(__file__), "last_id.txt"), "a+") as file:
         file.seek(0)
         last_id = file.read()
         try:
@@ -256,6 +256,7 @@ def render_template():
 
         user_data = load_user_data()
 
+        # this sucks
         if user_data == None:
             raise ValueError("Object can't be None!")
 
