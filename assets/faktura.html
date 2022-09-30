@@ -67,9 +67,9 @@
       }
 
       .payment {
-        margin: 40px 0;
+        margin: 20px 0;
         display: flex;
-        line-height: 1.7;
+        line-height: 1.6;
       }
 
       .payment > div:nth-child(1) {
@@ -81,12 +81,12 @@
       }
 
       .price {
-        font-size: x-large;
+        font-size: large;
         margin-left: 8px;
       }
 
       .people {
-        margin-top: 45px;
+        margin-top: 25px;
       }
 
       .fs-medium {
@@ -110,9 +110,9 @@
         {% endif %} {% if user_data.country %}
         <div>{{user_data.country}}</div>
         {% endif %} {% if user_data.ico %}
-        <div>{{user_data.ico}}</div>
+        <div>IČO: {{user_data.ico}}</div>
         {% endif %} {% if user_data.dic %}
-        <div>{{user_data.dic}}</div>
+        <div>DIČ:{{user_data.dic}}</div>
         {% endif %}
         <div>Neplatiteľ DPH</div>
         <h3 class="heading-kontakt"><b>Kontaktné údaje</b></h3>
@@ -154,7 +154,7 @@
         <div>Na úhradu: {{sum}}€</div>
       </div>
       <div>
-        <img src="qr.png" height="200" />
+        <img src="qr.png" height="170" />
       </div>
     </section>
     <section>

@@ -2,7 +2,12 @@ import tkinter as tk
 import json
 import datetime
 import tempfile
+import pay_by_square
+import qrcode
+import pdfkit
+import os
 from tkinter import END, MULTIPLE, Menu, Toplevel, ttk, messagebox
+from tkinter.filedialog import asksaveasfilename
 from jinja2 import Template
 
 root = tk.Tk()
@@ -249,28 +254,56 @@ def render_template():
                 "price_sum": "{:.2f}".format(price_sum),
             })
 
-        with open("./render.html", "w") as tmp_file:
-            tmp_file.write(template.render(
-                id=f"{str(current_year)}{last_id}",
-                user_data=load_user_data(),
-                date_of_issue=current_date.date().strftime("%d. %m. %Y"),
-                due_date=datetime.datetime.strftime(
-                    current_date + datetime.timedelta(days=14), "%d. %m. %Y"),
-                client={
-                    "name": name_entry.get(),
-                    "address": address_entry.get(),
-                    "city": city_entry.get(),
-                    "country": country_entry.get(),
-                    "ico": ico_entry.get(),
-                    "dic": dic_entry.get(),
-                },
-                products=products,
-                sum="{:.2f}".format(overall_sum),
-                const_sym=const_entry.get()
-            ))
-        file.seek(0)
-        file.truncate()
-        file.write(last_id)
+        user_data = load_user_data()
+
+        if user_data == None:
+            raise ValueError("Object can't be None!")
+
+        id = f"{str(current_year)}{last_id}"
+
+        pay_code = pay_by_square.generate(
+            amount=overall_sum,
+            iban=user_data["iban"],
+            swift=user_data["swift"],
+            currency="EUR",
+            variable_symbol=id,
+            constant_symbol=const_entry.get(),
+        )
+
+        qr_code_img = qrcode.make(pay_code)
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+
+            qr_code_img.save(os.path.join(tmp_dir, "qr.png"))
+
+            with open(os.path.join(tmp_dir, "render.html"), "w") as tmp_render:
+                tmp_render.write(template.render(
+                    id=id,
+                    user_data=user_data,
+                    date_of_issue=current_date.date().strftime("%d. %m. %Y"),
+                    due_date=datetime.datetime.strftime(
+                        current_date + datetime.timedelta(days=14), "%d. %m. %Y"),
+                    client={
+                        "name": name_entry.get(),
+                        "address": address_entry.get(),
+                        "city": city_entry.get(),
+                        "country": country_entry.get(),
+                        "ico": ico_entry.get(),
+                        "dic": dic_entry.get(),
+                    },
+                    products=products,
+                    sum="{:.2f}".format(overall_sum),
+                    const_sym=const_entry.get()
+                ))
+            file.seek(0)
+            file.truncate()
+            file.write(last_id)
+
+            save_as = asksaveasfilename(initialdir=os.path.expanduser("~"), initialfile=f"faktura_{id}.pdf", defaultextension=".pdf", filetypes=[
+                                        ("Všetky súbory", "*.*"), ("Portable File Document", "*.pdf")])
+
+            pdfkit.from_file(os.path.join(tmp_dir, "render.html"), save_as, options={
+                             "enable-local-file-access": ""})
 
 
 render_btn = ttk.Button(root, text="Vytvoriť faktúru", command=render_template)
