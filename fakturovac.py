@@ -25,7 +25,7 @@ def load_template():
 def user_data_edit_window():
     win = Toplevel(root)
     win.title("Nastavenia")
-    win.attributes('-type', 'dialog')
+    win.attributes("-type", "topmost")
 
     user_name_label = ttk.Label(win, text="Meno a priezvisko")
     user_name_label.grid(row=0, column=0)
