@@ -9,12 +9,12 @@
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
 
-      .right-in-two {
-        display: flex;
-      }
-
       .right-in-two > div:nth-child(1) {
         width: 65%;
+      }
+
+      .right-in-two > div{
+        display: inline-block;
       }
 
       h1,
@@ -49,16 +49,16 @@
       }
 
       h1 {
-        width: 35%;
+        width: fit-content;
+        margin-left: 65%;
       }
 
       h2 {
         font-size: large;
       }
 
-      .heading-sec {
-        display: flex;
-        justify-content: flex-end;
+      .heading-sec > h1 {
+        text-align: right;
       }
 
       .heading-kontakt {
@@ -68,8 +68,11 @@
 
       .payment {
         margin: 20px 0;
-        display: flex;
         line-height: 1.6;
+      }
+
+      .payment > div{
+        display: inline-block;
       }
 
       .payment > div:nth-child(1) {
@@ -134,6 +137,8 @@
         <div>{{client.country}}</div>
         {% endif %} {% if client.ico %}
         <div>IČO: {{client.ico}}</div>
+        {% endif %} {% if client.icdph %}
+        <div>IČ DPH: {{client.icdph}}</div>
         {% endif %} {% if client.dic %}
         <div>DIČ: {{client.dic}}</div>
         {% endif %}

@@ -178,10 +178,15 @@ ico_label.grid(row=4, column=0)
 ico_entry = ttk.Entry(root)
 ico_entry.grid(row=4, column=1)
 
+icdph_label = ttk.Label(root, text="IČ DPH")
+icdph_label.grid(row=5, column=0)
+icdph_entry = ttk.Entry(root)
+icdph_entry.grid(row=5, column=1)
+
 dic_label = ttk.Label(root, text="DIČ")
-dic_label.grid(row=5, column=0)
+dic_label.grid(row=6, column=0)
 dic_entry = ttk.Entry(root)
-dic_entry.grid(row=5, column=1)
+dic_entry.grid(row=6, column=1)
 
 # list of products
 
@@ -201,20 +206,20 @@ product_price_entry = ttk.Entry(root)
 product_price_entry.grid(row=2, column=3)
 
 const_label = ttk.Label(root, text="Konštantý symbol")
-const_label.grid(row=6, column=0)
+const_label.grid(row=7, column=0)
 const_entry = ttk.Entry(root)
-const_entry.grid(row=6, column=1, pady=20)
+const_entry.grid(row=7, column=1, pady=20)
 
 products_list_label = ttk.Label(root, text="Produkty")
-products_list_label.grid(row=7, column=0)
+products_list_label.grid(row=8, column=0)
 
 products_list_scrollbar = ttk.Scrollbar(root)
-products_list_scrollbar.grid(row=8, column=4, sticky="nesw", pady=(0, 20))
+products_list_scrollbar.grid(row=9, column=4, sticky="nesw", pady=(0, 20))
 
 products_list = tk.Listbox(root, selectmode=MULTIPLE)
 products_list.configure(yscrollcommand=products_list_scrollbar.set)
 products_list_scrollbar.configure(command=products_list.yview)
-products_list.grid(row=8, column=0, columnspan=4, sticky="ew", pady=(0, 20))
+products_list.grid(row=9, column=0, columnspan=4, sticky="ew", pady=(0, 20))
 
 product_add_btn = ttk.Button(root, text="Pridať", command=add_product)
 product_add_btn.grid(row=3, column=3, rowspan=2)
@@ -290,6 +295,7 @@ def render_template():
                         "city": city_entry.get(),
                         "country": country_entry.get(),
                         "ico": ico_entry.get(),
+                        "icdph": icdph_entry.get(),
                         "dic": dic_entry.get(),
                     },
                     products=products,
