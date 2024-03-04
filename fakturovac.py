@@ -210,6 +210,11 @@ const_label.grid(row=7, column=0)
 const_entry = ttk.Entry(root)
 const_entry.grid(row=7, column=1, pady=20)
 
+id_label = ttk.Label(root, text="ID")
+id_label.grid(row=7, column=2)
+id_entry = ttk.Entry(root)
+id_entry.grid(row=7, column=3, pady=20)
+
 products_list_label = ttk.Label(root, text="Produkty")
 products_list_label.grid(row=8, column=0)
 
@@ -233,84 +238,70 @@ product_clear_btn.grid(row=13, column=2)
 
 
 def render_template():
-    with open(os.path.join(os.path.dirname(__file__), "last_id.txt"), "a+") as file:
-        file.seek(0)
-        last_id = file.read()
-        try:
-            last_id = int(last_id)
-        except ValueError:
-            last_id = 0
-        last_id += 1
-        last_id = format(last_id, '04')
+    products = []
 
-        products = []
+    overall_sum = 0
 
-        overall_sum = 0
+    for product in products_list.get(0, END):
+        p = product.split(" - ")
+        price_sum = float(p[1][:-2]) * float(p[2][:-4])
+        overall_sum += price_sum
 
-        for product in products_list.get(0, END):
-            p = product.split(" - ")
-            price_sum = float(p[1][:-2]) * float(p[2][:-4])
-            overall_sum += price_sum
+        products.append({
+            "name": p[0],
+            "count": p[1],
+            "price": p[2],
+            "price_sum": "{:.2f}".format(price_sum),
+        })
 
-            products.append({
-                "name": p[0],
-                "count": p[1],
-                "price": p[2],
-                "price_sum": "{:.2f}".format(price_sum),
-            })
+    user_data = load_user_data()
 
-        user_data = load_user_data()
+    # this sucks
+    if user_data == None:
+        raise ValueError("Object can't be None!")
 
-        # this sucks
-        if user_data == None:
-            raise ValueError("Object can't be None!")
+    id = f"{str(current_year)}{int(id_entry.get()):04d}"
 
-        id = f"{str(current_year)}{last_id}"
+    pay_code = pay_by_square.generate(
+        amount=overall_sum,
+        iban=user_data["iban"],
+        swift=user_data["swift"],
+        currency="EUR",
+        variable_symbol=id,
+        constant_symbol=const_entry.get(),
+    )
 
-        pay_code = pay_by_square.generate(
-            amount=overall_sum,
-            iban=user_data["iban"],
-            swift=user_data["swift"],
-            currency="EUR",
-            variable_symbol=id,
-            constant_symbol=const_entry.get(),
-        )
+    qr_code_img = qrcode.make(pay_code)
 
-        qr_code_img = qrcode.make(pay_code)
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        qr_code_img.save(os.path.join(tmp_dir, "qr.png"))
 
-        with tempfile.TemporaryDirectory() as tmp_dir:
+        with open(os.path.join(tmp_dir, "render.html"), "w") as tmp_render:
+            tmp_render.write(template.render(
+                id=id,
+                user_data=user_data,
+                date_of_issue=current_date.date().strftime("%d. %m. %Y"),
+                due_date=datetime.datetime.strftime(
+                    current_date + datetime.timedelta(days=14), "%d. %m. %Y"),
+                client={
+                    "name": name_entry.get(),
+                    "address": address_entry.get(),
+                    "city": city_entry.get(),
+                    "country": country_entry.get(),
+                    "ico": ico_entry.get(),
+                    "icdph": icdph_entry.get(),
+                    "dic": dic_entry.get(),
+                },
+                products=products,
+                sum="{:.2f}".format(overall_sum),
+                const_sym=const_entry.get()
+            ))
 
-            qr_code_img.save(os.path.join(tmp_dir, "qr.png"))
+        save_as = asksaveasfilename(initialdir=os.path.expanduser("~"), initialfile=f"faktura_{id}.pdf", defaultextension=".pdf", filetypes=[
+                                    ("Všetky súbory", "*.*"), ("Portable File Document", "*.pdf")])
 
-            with open(os.path.join(tmp_dir, "render.html"), "w") as tmp_render:
-                tmp_render.write(template.render(
-                    id=id,
-                    user_data=user_data,
-                    date_of_issue=current_date.date().strftime("%d. %m. %Y"),
-                    due_date=datetime.datetime.strftime(
-                        current_date + datetime.timedelta(days=14), "%d. %m. %Y"),
-                    client={
-                        "name": name_entry.get(),
-                        "address": address_entry.get(),
-                        "city": city_entry.get(),
-                        "country": country_entry.get(),
-                        "ico": ico_entry.get(),
-                        "icdph": icdph_entry.get(),
-                        "dic": dic_entry.get(),
-                    },
-                    products=products,
-                    sum="{:.2f}".format(overall_sum),
-                    const_sym=const_entry.get()
-                ))
-            file.seek(0)
-            file.truncate()
-            file.write(last_id)
-
-            save_as = asksaveasfilename(initialdir=os.path.expanduser("~"), initialfile=f"faktura_{id}.pdf", defaultextension=".pdf", filetypes=[
-                                        ("Všetky súbory", "*.*"), ("Portable File Document", "*.pdf")])
-
-            pdfkit.from_file(os.path.join(tmp_dir, "render.html"), save_as, options={
-                             "enable-local-file-access": ""})
+        pdfkit.from_file(os.path.join(tmp_dir, "render.html"), save_as, options={
+                         "enable-local-file-access": ""})
 
 
 render_btn = ttk.Button(root, text="Vytvoriť faktúru", command=render_template)
