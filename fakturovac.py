@@ -210,6 +210,11 @@ const_label.grid(row=7, column=0)
 const_entry = ttk.Entry(root)
 const_entry.grid(row=7, column=1, pady=20)
 
+due_label = ttk.Label(root, text="Splatnosť - dni")
+due_label.grid(row=6, column=2)
+due_entry = ttk.Entry(root)
+due_entry.grid(row=6, column=3)
+
 id_label = ttk.Label(root, text="ID")
 id_label.grid(row=7, column=2)
 id_entry = ttk.Entry(root)
@@ -282,7 +287,7 @@ def render_template():
                 user_data=user_data,
                 date_of_issue=current_date.date().strftime("%d. %m. %Y"),
                 due_date=datetime.datetime.strftime(
-                    current_date + datetime.timedelta(days=14), "%d. %m. %Y"),
+                    current_date + datetime.timedelta(days=int(due_entry.get())), "%d. %m. %Y"),
                 client={
                     "name": name_entry.get(),
                     "address": address_entry.get(),
